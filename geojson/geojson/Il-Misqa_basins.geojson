@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Il-Misqa_basins",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Name": "Misqa-B1", "Description": "", "Label": "B1", "source_file": "Il-Misqa-B1.geojson" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 14.435262645842446, 35.82903949793527 ], [ 14.435255827765008, 35.829028446914911 ], [ 14.435263000947778, 35.829025841763233 ], [ 14.435263762725626, 35.829025575061671 ], [ 14.435269681159232, 35.829023357740695 ], [ 14.435275663550801, 35.829034565529938 ], [ 14.435262645842446, 35.82903949793527 ] ] ] } }
+]
+}
