@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Water resources for the Neolithic Ħaġar Qim – Mnajdra cluster - Figure 1</title>
+  <title>Water resources for the Neolithic Ħaġar Qim – Mnajdra cluster - Figure 6</title>
   <style>
     body { font-family: sans-serif; padding: 2rem; background: #f9f9f9; color: #333; }
     img { max-width: 100%; border-radius: 8px; }
@@ -17,7 +17,7 @@
 </head>
 <body>
   <header>
-    <h1>Water resources for the Neolithic Ħaġar Qim – Mnajdra cluster - Figure 1</h1>
+    <h1>Water resources for the Neolithic Ħaġar Qim – Mnajdra cluster - Figure 6</h1>
     <p>https://www.researchgate.net/publication/your-article</p>
     <p>© Ronald Poell</p>
     <!--
@@ -30,7 +30,7 @@
       </a>
     </div>
   -->
-    
+
     <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
       <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">
         <img src="https://licensebuttons.net/l/by/4.0/88x31.png" alt="Creative Commons License" style="height: 31px;">
@@ -41,12 +41,12 @@
     </div>
   </header>
 
-  <img id="mainImage" src="../images/040377-IMG_3715-C.JPG" alt="Figure 1: Panoramic view of Ħaġar Qim (right) and Mnajdra (left) in their landscape. (040377)">
+  <img id="mainImage" src="../images/044435-SAM_0545.JPG" alt="Figure 6: Illustration of the micro-topography of the site. In the foreground T1. In the background the slab of T3 (right) and the ones from T4 (left). (044435)">
   <div class="meta" id="meta">Loading metadata…</div>
-  <div class="caption">Figure 1: Panoramic view of Ħaġar Qim (right) and Mnajdra (left) in their landscape. (040377)</div>
+  <div class="caption">Figure 6: Illustration of the micro-topography of the site. In the foreground T1. In the background the slab of T3 (right) and the ones from T4 (left). (044435)</div>
   <p><a href="../index.html">← Gallery</a></p>
 
-  
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
 <script>
@@ -71,69 +71,63 @@ document.addEventListener("DOMContentLoaded", () => {
   const providedDate = null;
   const providedGPS = null;
 
-  function renderMeta(dateStr, gpsStr) {
+  if (providedDate || providedGPS) {
+    const gpsStr = providedGPS
+      ? ` <a href="${makeGoogleMapsLink(providedGPS.lat, providedGPS.lon)}" target="_blank">${providedGPS.lat}, ${providedGPS.lon}</a>`
+      : "N/A";
+    const dateStr = providedDate || "N/A";
     meta.innerHTML = `<strong>Date:</strong> ${dateStr}<br><strong>GPS:</strong> ${gpsStr}`;
-  }
-
-  if (providedDate && providedGPS) {
-    const gpsStr = `<a href="${makeGoogleMapsLink(providedGPS.lat, providedGPS.lon)}" target="_blank">${providedGPS.lat}, ${providedGPS.lon}</a>`;
-    renderMeta(providedDate, gpsStr);
     return;
   }
 
-  function extractFromEXIF() {
+  function fillMetadata() {
     EXIF.getData(img, function () {
-      const exifDate = EXIF.getTag(this, 'DateTimeOriginal');
-      const gpsTime = EXIF.getTag(this, 'GPSTimeStamp');
+      const date = EXIF.getTag(this, 'DateTimeOriginal');
       const lat = EXIF.getTag(this, 'GPSLatitude');
       const lon = EXIF.getTag(this, 'GPSLongitude');
-      const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
-      const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'E';
+      const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || "N";
+      const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || "E";
+      const allTags = EXIF.getAllTags(this);
+      console.log("allTags",allTags);
+
+      const gpsTimeStamp = EXIF.getTag(this, 'GPSTimeStamp')
+      console.log("gpsTimeStamp",gpsTimeStamp);
+      const gpsTimeStr = `${gpsTimeStamp[0].numerator}:${gpsTimeStamp[1].numerator}:${gpsTimeStamp[2].numerator}`
+      console.log("gpsTimeStr",gpsTimeStr);
 
       let gpsStr = "N/A";
-      if ((providedGPS || (lat && lon))) {
-        const latVal = providedGPS ? providedGPS.lat : toDecimal(lat, latRef).toFixed(6);
-        const lonVal = providedGPS ? providedGPS.lon : toDecimal(lon, lonRef).toFixed(6);
-        gpsStr = `<a href="${makeGoogleMapsLink(latVal, lonVal)}" target="_blank">${latVal}, ${lonVal}</a>`;
+      if (lat && lon && latRef && lonRef) {
+        const latDec = toDecimal(lat, latRef).toFixed(6);
+        const lonDec = toDecimal(lon, lonRef).toFixed(6);
+        gpsStr = `<a href="${makeGoogleMapsLink(latDec, lonDec)}" target="_blank">${latDec}, ${lonDec}</a>`;
       }
 
-      let dateStr = providedDate || "N/A";
-      try {
-        if (!providedDate && exifDate) {
-          const match = exifDate.match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})$/);
-          if (match) {
-            const [ , y, m, d, , min, sec ] = match;
-            const hour = gpsTime && gpsTime[0] != null ? String(Math.floor(gpsTime[0])).padStart(2, '0') : "00";
-            const iso = `${y}-${m}-${d}T${hour}:${min}:${sec}Z`;
-            const dateObj = new Date(iso);
-            if (!isNaN(dateObj)) {
-              dateStr = formatUTCDate(dateObj);
-            }
-          }
-        }
-      } catch (e) {
-        console.warn("EXIF date parsing failed.");
-      }
-
-      if (!providedDate && dateStr === "N/A") {
-        fetch(img.src, { method: 'HEAD' })
-          .then(r => {
-            const modified = r.headers.get('Last-Modified');
-            if (modified) {
-              const d = new Date(modified);
-              dateStr = formatUTCDate(d);
-            }
-            renderMeta(dateStr, gpsStr);
-          })
-          .catch(() => renderMeta(dateStr, gpsStr));
+      if (date) {
+        const fixedDate = new Date(date.replace(/^(\d{4}):(\d{2}):(\d{2})/, "$1-$2-$3").replace(" ", "T") + "Z");
+        console.log("fixedDate",fixedDate);
+        meta.innerHTML = `<strong>Date:</strong> ${formatUTCDate(fixedDate)}<br><strong>GPS:</strong> ${gpsStr}`;
+        //const fixed = date.replace(/^(d{4}):(d{2}):(d{2})/, "$1-$2-$3");
+        //const dateObj = new Date(fixed.replace(" ", "T") + "Z");
+        //meta.innerHTML = `<strong>Date:</strong> ${formatUTCDate(dateObj)}<br><strong>GPS:</strong> ${gpsStr}`;
       } else {
-        renderMeta(dateStr, gpsStr);
+        fetch(img.src, { method: 'HEAD', cache: 'no-store' })
+          .then(resp => {
+            const lastModified = resp.headers.get('Last-Modified');
+            const lmDate = lastModified ? new Date(lastModified) : null;
+            meta.innerHTML = `<strong>Date:</strong> ${lmDate ? formatUTCDate(lmDate) : 'N/A'}<br><strong>GPS:</strong> ${gpsStr}`;
+          })
+          .catch(() => {
+            meta.innerHTML = `<strong>Date:</strong> N/A<br><strong>GPS:</strong> ${gpsStr}`;
+          });
       }
     });
   }
 
-  if (img.complete) extractFromEXIF();
-  else img.onload = extractFromEXIF;
+  if (img.complete) {
+    fillMetadata();
+  } else {
+    img.onload = fillMetadata;
+  }
 });
 </script>
 </body>
